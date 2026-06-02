@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pinkjulieland | Web Design & Full Service</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@200;300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Mitr', 'sans-serif'],
+                        mono: ['Space Mono', 'monospace'],
+                    },
+                    colors: {
+                        'blue-main': '#86cbea', // สีฟ้าพาสเทลหลัก
+                        'blue-soft': '#eef7fc', // สีฟ้าอ่อนมาก (พื้นหลัง)
+                        'blue-deep': '#2755ab', // สีน้ำเงินเข้ม (ตัวหนังสือ/โบว์)
+                        'yellow-main': '#fcf096', // สีเหลืองพาสเทลหลัก
+                        'yellow-soft': '#fffce8', // สีเหลืองอ่อน
+                        'yellow-deep': '#eab308', // สีเหลืองเข้มสำหรับตัดเส้น/เงา
+                        'ticket-bg': '#ffffff',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f1f8fc;
+            background-image: radial-gradient(#86cbea 1.2px, transparent 1.2px);
+            background-size: 24px 24px;
+            overflow-x: hidden;
+        }
+        /* --- Floating SVGs Background --- */
+        .floating-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .svg-float {
+            position: absolute;
+            opacity: 0;
+            animation: float-around infinite linear;
+            animation-fill-mode: both;
+        }
+        .svg-float svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0px 2px 4px rgba(134, 203, 234, 0.4));
+        }
+        @keyframes float-around {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+        /* --- Splash Screen Styles --- */
+        #splash-screen {
+            background: linear-gradient(180deg, #eef7fc 0%, #86cbea 100%);
+            transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
+            z-index: 60;
+        }
+        
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50px;
+        }
+        .cloud::before, .cloud::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50%;
+        }
+        .cloud-1 { top: 15%; left: 10%; width: 60px; height: 20px; animation: cloud-float 6s ease-in-out infinite; }
+        .cloud-1::before { width: 30px; height: 30px; top: -15px; left: 10px; }
+        .cloud-1::after { width: 20px; height: 20px; top: -10px; left: 35px; }
+        .cloud-2 { top: 40%; left: 80%; width: 80px; height: 25px; animation: cloud-float 8s ease-in-out infinite reverse; }
+        .cloud-2::before { width: 40px; height: 40px; top: -20px; left: 15px; }
+        .cloud-2::after { width: 30px; height: 30px; top: -10px; left: 45px; }
+        @keyframes cloud-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .pulse-btn {
+            animation: pulse-ring 2.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(134, 203, 234, 0.6); }
+            70% { transform: scale(1); box-shadow: 0 0 0 15px rgba(134, 203, 234, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(134, 203, 234, 0); }
+        }
+        /* --- Main Ticket Styles --- */
+        #main-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 1s ease-in;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .ticket-cutout-left, .ticket-cutout-right {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 30px;
+            background-color: #f1f8fc;
+            background-image: radial-gradient(#86cbea 1.2px, transparent 1.2px);
+            background-size: 24px 24px;
+            border-radius: 50%;
+            z-index: 10;
+        }
+        .ticket-cutout-left { left: -15px; }
+        .ticket-cutout-right { right: -15px; }
+        .dashed-divider {
+            border-top: 3px dashed #86cbea;
+            position: relative;
+        }
+        /* Stamps */
+        .stamp {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 0;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .stamp-p1 {
+            border: 4px solid #86cbea;
+            color: #86cbea;
+            width: 100px;
+            height: 100px;
+            transform: rotate(-15deg);
+        }
+        .stamp-p1::before {
+            content: '\f0fb';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 40px;
+        }
+        .stamp-p2 {
+            border: 4px solid #fcf096;
+            color: #eab308;
+            width: 120px;
+            height: 120px;
+            transform: rotate(25deg);
+            background: transparent;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+        .stamp-p3 {
+            border: 3px solid #2755ab;
+            color: #2755ab;
+            width: 140px;
+            height: 60px;
+            border-radius: 5px;
+            transform: rotate(-5deg);
+            font-size: 14px;
+            text-align: center;
+        }
+        .barcode {
+            height: 40px;
+            width: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                #86cbea, #86cbea 2px, transparent 2px, transparent 5px,
+                #fcf096 5px, #fcf096 8px, transparent 8px, transparent 11px,
+                #2755ab 11px, #2755ab 13px, transparent 13px, transparent 16px
+            );
+        }
+        .data-label {
+            font-size: 0.7rem;
+            color: #86cbea;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        .data-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.1rem;
+            color: #2755ab;
+            font-weight: 700;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f8fc; }
+        ::-webkit-scrollbar-thumb { background: #86cbea; border-radius: 4px; }
+    </style>
+</head>
+<body class="font-sans antialiased min-h-screen relative text-blue-deep">
+    <div id="floating-emojis" class="floating-container"></div>
+    <div id="splash-screen" class="fixed inset-0 flex flex-col items-center justify-center">
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="relative z-10 flex flex-col items-center">
+            <div class="w-32 h-32 bg-white rounded-3xl shadow-xl flex items-center justify-center mb-6 border-4 border-[#eef7fc] overflow-hidden">
+                <img src="logo1.png" alt="Shop Logo" class="w-full h-full object-cover hover:scale-110 transition duration-500">
+            </div>
+            
+            <h1 class="text-white text-4xl md:text-5xl font-bold tracking-wider mb-2 drop-shadow-md">Pinkjulieland</h1>
+            <p class="text-white text-sm md:text-base tracking-widest uppercase italic font-medium mb-4 drop-shadow-sm">Web Design | Full Service</p>
+            
+            <div class="flex text-yellow-main space-x-1 mb-12 text-xl drop-shadow-sm">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+            </div>
+            <button onclick="enterShop()" class="pulse-btn w-20 h-20 bg-white/50 backdrop-blur-md border border-white rounded-full flex items-center justify-center cursor-pointer hover:bg-white/70 transition shadow-lg group">
+                <i class="fa-solid fa-play text-blue-deep text-3xl ml-2 group-hover:scale-110 transition duration-300"></i>
+            </button>
+            <p class="text-white mt-6 text-sm drop-shadow-sm font-medium">กดปุ่มเพื่อเข้าสู่ร้านจูนะคะ</p>
+        </div>
+    </div>
+    <div id="main-content" class="py-10 px-4 w-full flex justify-center">
+        
+        <div class="w-full max-w-3xl bg-ticket-bg rounded-3xl shadow-2xl overflow-hidden relative border-2 border-blue-100">
+            
+            <div class="absolute top-4 left-5 flex gap-1.5 z-20">
+                <div class="w-3 h-3 rounded-full bg-red-400 border border-white/30 shadow-sm"></div>
+                <div class="w-3 h-3 rounded-full bg-yellow-400 border border-white/30 shadow-sm"></div>
+                <div class="w-3 h-3 rounded-full bg-green-400 border border-white/30 shadow-sm"></div>
+            </div>
+
+            <div class="bg-blue-main p-6 pt-10 flex items-center justify-between text-white relative overflow-hidden">
+                <div class="absolute inset-0 opacity-30" style="background-image: radial-gradient(white 2px, transparent 2px); background-size: 15px 15px;"></div>
+                
+                <div class="flex items-center gap-4 relative z-10">
+                    <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center text-blue-main shadow-sm overflow-hidden border-2 border-yellow-main">
+                        <img src="logo1.png" alt="Shop Logo" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold tracking-widest drop-shadow-sm uppercase">Boarding Pass</h2>
+                        <p class="text-sm uppercase tracking-wider opacity-90">Passenger Name</p>
+                        <p class="font-mono text-xl drop-shadow-sm text-yellow-main">PINKJULIELAND</p>
+                    </div>
+                </div>
+                <div class="text-right hidden sm:block relative z-10">
+                    <h1 class="text-3xl font-extrabold italic drop-shadow-sm text-yellow-main">Pinkjulieland</h1>
+                    <p class="text-xs uppercase opacity-90">Web Design Studio</p>
+                </div>
+            </div>
+            <div class="p-8 relative bg-white">
+                <div class="stamp stamp-p1 top-4 right-10"></div>
+                <div class="stamp stamp-p3 bottom-10 left-10"><i class="fa-solid fa-check-circle mr-2"></i>VISA<br>APPROVED</div>
+                <div class="text-center mb-8 relative z-10">
+                    <p class="text-blue-main mb-2 font-medium"><i class="fa-solid fa-heart text-yellow-deep"></i> ยินดีต้อนรับเข้าสู่โลกของจูนะคะ <i class="fa-solid fa-heart text-yellow-deep"></i></p>
+                    <h3 class="text-2xl md:text-3xl font-bold text-blue-deep mb-2">ร้านจูรับทำเว็บไซต์ครบวงจร</h3>
+                    <p class="text-blue-main text-sm font-medium">พร้อมบริการรับส่งสติกเกอร์ไลน์ และจำหน่ายแอปเกม iOS / Android</p>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+                    <div><p class="data-label">From</p><p class="data-value">IDEA</p></div>
+                    <div><p class="data-label">To</p><p class="data-value">WEBSITE</p></div>
+                    <div><p class="data-label">Gate</p><p class="data-value text-yellow-deep">JULIE</p></div>
+                    <div><p class="data-label">Status</p><p class="data-value text-blue-deep">OPEN</p></div>
+                </div>
+
+                <a href="#" class="block w-full mb-8 py-3 border-2 border-dashed border-blue-main text-blue-deep bg-blue-soft/50 text-center rounded-xl hover:bg-blue-main hover:text-white transition font-bold relative z-10">
+                    <i class="fa-solid fa-clipboard-list mr-2"></i> เช็คคิวงาน (Status Bar)
+                </a>
+
+                <div class="bg-yellow-soft p-5 rounded-2xl border-2 border-yellow-main shadow-sm relative z-10">
+                    <h4 class="font-bold text-blue-deep mb-3"><i class="fa-solid fa-palette mr-2 text-blue-main"></i> งานที่รับทำ</h4>
+                    <ul class="space-y-2 text-blue-deep text-sm">
+                        <li><i class="fa-solid fa-star text-yellow-deep mr-2 text-xs"></i> เว็บเรทราคาแอปพรีเมียม</li>
+                        <li><i class="fa-solid fa-star text-yellow-deep mr-2 text-xs"></i> เว็บเรทราคารับเติมเกมส์</li>
+                        <li><i class="fa-solid fa-star text-yellow-deep mr-2 text-xs"></i> เว็บเรทราคารับทำป้าย</li>
+                        <li><i class="fa-solid fa-star text-yellow-deep mr-2 text-xs"></i> เว็บอื่น ๆ สอบถามเพิ่มเติมได้ค่ะ</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="dashed-divider">
+                <div class
